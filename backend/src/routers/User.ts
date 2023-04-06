@@ -1,17 +1,12 @@
-import express, { Request, Response } from "express"
-import axios from "axios"
+import express, { Request, Response, response } from "express"
+import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import mysql2 from "mysql2"
 dotenv.config()
 const router = express.Router()
 
-type ConfigDb = {
-	host: string | undefined
-	user: string
-	password: string
-	database: string
-	port: string | number
-}
+// hash password
+const saltRound: number = 5
 
 const db = mysql2.createConnection({
 	host: process.env.dbHost,
@@ -36,15 +31,38 @@ router.get("/all", (req: Request, res: Response) => {
 
 // Create user
 router.post("/create", (req: Request, res: Response) => {
-	const { username, password, name } = req.body
-	db.query(
-		"INSERT INTO users (username, hashedPassword, name) VALUES (?, ?, ?)",
-		[username, password, name],
-		(err, response) => {
-			if (err) {
-				res.status(401).json({ err: err.message })
+	const { username, password, confirmedPassword, name } = req.body
+
+	// Check already user
+	db.execute(
+		"SELECT * FROM users WHERE username = ?",
+		[username],
+		(err, result) => {
+			if (err) throw new Error(err.message)
+			const countUser = result.length
+			if (countUser > 1) {
+				res
+					.status(401)
+					.json({ message: "Username's already please change it!" })
+				return
+			}
+
+			if (password === confirmedPassword) {
+				// Create new user
+				const hashedPassword = bcrypt.hashSync(password, saltRound)
+				db.query(
+					"INSERT INTO users (username, hashedPassword, name) VALUES (?, ?, ?)",
+					[username, hashedPassword, name],
+					(err, response) => {
+						if (err) {
+							res.status(401).json({ message: err.message })
+						} else {
+							res.status(200).json({ message: "Registration's successful" })
+						}
+					}
+				)
 			} else {
-				res.status(200).json({ data: response })
+				res.status(401).json({ message: "Your password's not matched" })
 			}
 		}
 	)
