@@ -1,4 +1,4 @@
-import express, { Request, Response, response } from "express"
+import express, { Request, Response } from "express"
 import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import mysql2 from "mysql2"
