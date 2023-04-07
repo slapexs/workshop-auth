@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar"
 import TextInput from "@/components/TextInput"
 import { FC, useState } from "react"
+import axios from "axios"
 
 const Login: FC = () => {
 	const [username, setUsername] = useState("")
@@ -8,7 +9,19 @@ const Login: FC = () => {
 
 	const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault()
-		console.log(username, password)
+		axios
+			.post("http://localhost:5000/auth/login", {
+				username,
+				password,
+			})
+			.then((res) => {
+				if (res.status == 200) {
+					localStorage.setItem("token", res.data.token)
+				} else {
+					console.log(`Error: ${res.data}`)
+				}
+			})
+			.catch((err) => console.log(err.response.statusText))
 	}
 	return (
 		<>
