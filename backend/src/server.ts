@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from "express"
 import dotenv from "dotenv"
+import cors from "cors"
 dotenv.config()
 
 // Router
@@ -8,6 +9,7 @@ const authRouter = require("./routers/Auth")
 
 const app: Application = express()
 app.use(express.json())
+app.use(cors())
 const appPort: any = process.env.PORT || 8000
 
 app.get("/", (req: Request, res: Response) => {
