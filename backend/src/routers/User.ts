@@ -29,6 +29,22 @@ router.get("/all", (req: Request, res: Response) => {
 	})
 })
 
+// Get user by id
+router.get("/finduser/:uid", (req: Request, res: Response) => {
+	const { uid } = req.params
+	db.execute(
+		"SELECT id,username, name FROM users WHERE id = ?",
+		[uid],
+		(err, result) => {
+			if (result.length > 0) {
+				res.json(result[0]).status(200)
+			} else {
+				res.status(400).json({ message: "Not found user" })
+			}
+		}
+	)
+})
+
 // Create user
 router.post("/create", (req: Request, res: Response) => {
 	const { username, password, confirmedPassword, name } = req.body

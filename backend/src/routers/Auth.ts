@@ -3,8 +3,8 @@ import bcrypt from "bcrypt"
 import dotenv from "dotenv"
 import mysql2 from "mysql2"
 dotenv.config()
-const router = express.Router()
 import * as jwt from "jsonwebtoken"
+const router = express.Router()
 const jwtSecret = "nextlogin"
 
 // Connect database
@@ -37,15 +37,13 @@ router.post("/login", (req: Request, res: Response) => {
 
 				// is matched
 				if (passwordMatched) {
-					const token: string = jwt.sign(username, jwtSecret)
+					const token = jwt.sign({ uid: objUser.id }, jwtSecret)
 					res.json({ token })
 				} else {
-					res
-						.status(401)
-						.json({
-							message:
-								"Username and password not matched, please check it again.",
-						})
+					res.status(401).json({
+						message:
+							"Username and password not matched, please check it again.",
+					})
 				}
 			} else {
 				res.status(401).json({ message: "username's invalid" })
