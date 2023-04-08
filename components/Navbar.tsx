@@ -6,14 +6,11 @@ type NavMenu = {
 	label: string
 	path: string
 }[]
+
 const navbarMenu: NavMenu = [
 	{
 		label: "Home",
 		path: "/",
-	},
-	{
-		label: "Login",
-		path: "/login",
 	},
 	{
 		label: "Register",
@@ -22,11 +19,19 @@ const navbarMenu: NavMenu = [
 ]
 const Navbar: FC = () => {
 	const router = useRouter()
-	const [pathNow, setPathNow] = useState("/")
+	const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+	const logOut = () => {
+		localStorage.removeItem("token")
+		router.push("/")
+	}
 	useEffect(() => {
-		setPathNow(router.asPath)
-		console.log(pathNow)
-	}, [])
+		if (localStorage.getItem("token")) {
+			setIsLoggedIn(true)
+		} else {
+			setIsLoggedIn(false)
+		}
+	})
 
 	return (
 		<>
@@ -35,22 +40,38 @@ const Navbar: FC = () => {
 					{/* Nav brand */}
 					<div>Logo here</div>
 					<div className="w-auto">
-						<ul className="flex justify-end gap-x-5">
+						<ul className="flex justify-end gap-x-5 items-center">
 							{navbarMenu.map((elem, index) => (
 								<Link key={index} href={elem.path}>
 									<li
 										className={
-											"hover:text-yellow-200 transition hover:cursor-pointer" +
-												pathNow ==
-											elem.path
-												? "text-red-400"
-												: ""
+											"hover:text-yellow-200 transition hover:cursor-pointer"
 										}
 									>
 										{elem.label}
 									</li>
 								</Link>
 							))}
+							{isLoggedIn ? (
+								<li
+									className={
+										"hover:bg-yellow-200 hover:text-black transition hover:cursor-pointer border-2 border-yellow-200 px-2 py-1 rounded"
+									}
+									onClick={logOut}
+								>
+									Logout
+								</li>
+							) : (
+								<Link href="/login">
+									<li
+										className={
+											"hover:text-yellow-200 transition hover:cursor-pointer"
+										}
+									>
+										Login
+									</li>
+								</Link>
+							)}
 						</ul>
 					</div>
 				</div>

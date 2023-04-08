@@ -1,11 +1,23 @@
 import Navbar from "@/components/Navbar"
 import TextInput from "@/components/TextInput"
-import { FC, useState } from "react"
+import { FC, useState, useEffect } from "react"
 import axios from "axios"
+import { useRouter } from "next/router"
 
 const Login: FC = () => {
 	const [username, setUsername] = useState("")
 	const [password, setPassword] = useState("")
+	const [isLoggedIn, setIsLoggedIn] = useState(false)
+	const router = useRouter()
+
+	useEffect(() => {
+		if (localStorage.getItem("token")) {
+			setIsLoggedIn(true)
+			router.push("/")
+		} else {
+			setIsLoggedIn(false)
+		}
+	}, [])
 
 	const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault()
@@ -17,6 +29,10 @@ const Login: FC = () => {
 			.then((res) => {
 				if (res.status == 200) {
 					localStorage.setItem("token", res.data.token)
+					if (localStorage.getItem("token")) {
+						setIsLoggedIn(true)
+					}
+					router.push("/")
 				} else {
 					console.log(`Error: ${res.data}`)
 				}
