@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar"
 import { FC, useState, useEffect } from "react"
 import { useRouter } from "next/router"
 import WelcomeText from "@/components/WelcomeText"
+import ListUser from "@/components/ListUser"
 
 const Home: FC = () => {
 	const router = useRouter()
@@ -21,7 +22,10 @@ const Home: FC = () => {
 			<Navbar />
 			<section className="w-full flex justify-center">
 				{/* Container */}
-				<div className="w-11/12">{isLoggedIn && <WelcomeText />}</div>
+				<div className="w-11/12">
+					{isLoggedIn && <WelcomeText />}
+					{isLoggedIn && <ListUser />}
+				</div>
 			</section>
 		</>
 	)
